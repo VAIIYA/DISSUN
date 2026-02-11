@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap');
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+  body {
+    @apply font-geist bg-metamask-peach text-metamask-black antialiased;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-metamask-orange rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-orange-600;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-metamask-orange text-metamask-white px-8 py-4 font-bold tracking-tight rounded-full hover:bg-orange-600 transition-all duration-300;
+  }
+
+  .btn-secondary {
+    @apply bg-metamask-black text-metamask-white px-8 py-4 font-bold tracking-tight rounded-full hover:bg-gray-900 transition-all duration-300;
+  }
+
+  .metamask-heading {
+    @apply font-geist text-4xl md:text-7xl font-extrabold text-metamask-black leading-tight tracking-tight;
+  }
+
+  .metamask-subheading {
+    @apply font-geist text-lg md:text-2xl text-metamask-black/80 leading-relaxed;
+  }
+
+  .metamask-card {
+    @apply bg-metamask-white rounded-3xl shadow-sm hover:shadow-lg transition-all duration-500 border border-black/5;
+  }
+
+  .metamask-text {
+    @apply font-geist text-base leading-relaxed text-metamask-black/70;
+  }
+
+  .metamask-accent {
+    @apply text-metamask-orange font-bold;
+  }
+
+  /* Selection styling */
+  ::selection {
+    background-color: rgba(232, 131, 29, 0.3);
+    color: #000000;
+  }
+
+  /* Focus styles */
+  .focus-metamask:focus {
+    @apply outline-none ring-2 ring-metamask-orange ring-offset-2 ring-offset-metamask-peach;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .backdrop-blur-custom {
+    backdrop-filter: blur(12px);
+  }
+}
