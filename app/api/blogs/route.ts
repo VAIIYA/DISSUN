@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server'
 import { getBlogsCollection } from '@/lib/db'
-import { ObjectId } from 'mongodb'
-
 export async function GET() {
     try {
         const collection = await getBlogsCollection()

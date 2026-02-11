@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { ObjectId } from 'mongodb'
 
 export async function DELETE(
     req: Request,
@@ -10,7 +9,7 @@ export async function DELETE(
         const { id } = params
 
         await db.messages.delete({
-            where: { _id: new ObjectId(id) }
+            where: { _id: id }
         })
 
         return NextResponse.json({ success: true })

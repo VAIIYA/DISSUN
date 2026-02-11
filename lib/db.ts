@@ -112,7 +112,7 @@ export const db = {
   }
 };
 
-export const getBlogsCollection = async () => {
+export const getBlogsCollection = async (): Promise<any> => {
   return {
     find: (query?: any) => ({
       sort: (sort?: any) => ({
@@ -127,15 +127,106 @@ export const getBlogsCollection = async () => {
           return result.map(b => ({ ...b, _id: b.id }));
         }
       })
-    })
+    }),
+    findOne: async (query: any) => {
+      const id = query.id || query._id;
+      const result = await db_drizzle.query.blogs.findFirst({
+        where: id ? eq(schema.blogs.id, id.toString()) : undefined,
+      });
+      return result ? { ...result, _id: result.id } : null;
+    },
+    updateOne: async (query: any, update: any) => {
+      const id = query.id || query._id;
+      const data = update.$set || update;
+      delete data._id;
+      delete data.id;
+      return await db_drizzle.update(schema.blogs).set(data).where(eq(schema.blogs.id, id.toString()));
+    },
+    deleteOne: async (query: any) => {
+      const id = query.id || query._id;
+      return await db_drizzle.delete(schema.blogs).where(eq(schema.blogs.id, id.toString()));
+    },
+    insertOne: async (data: any) => {
+      const id = data.id || data._id || Math.random().toString(36).substring(7);
+      const insertData = { ...data, id };
+      delete insertData._id;
+      await db_drizzle.insert(schema.blogs).values(insertData);
+      return { insertedId: id };
+    }
   };
 };
 
-export const getMessagesCollection = async () => {
+export const getMessagesCollection = async (): Promise<any> => {
   return {
     countDocuments: async () => {
       const result = await db_drizzle.select({ count: sql<number>`count(*)` }).from(schema.messages);
       return result[0].count;
+    },
+    findOne: async (query: any) => {
+      const id = query.id || query._id;
+      const result = await db_drizzle.query.messages.findFirst({
+        where: id ? eq(schema.messages.id, id.toString()) : undefined,
+      });
+      return result ? { ...result, _id: result.id } : null;
+    },
+    deleteOne: async (query: any) => {
+      const id = query.id || query._id;
+      return await db_drizzle.delete(schema.messages).where(eq(schema.messages.id, id.toString()));
     }
+  };
+};
+
+export const getCollection = async (name: string): Promise<any> => {
+  if (name === 'blogs') return getBlogsCollection();
+  if (name === 'messages') return getMessagesCollection();
+
+  const mockCollection = (tableName: any) => ({
+    findOne: async (query: any) => {
+      const id = query.id || query._id;
+      const result = await db_drizzle.query[name as keyof typeof db_drizzle.query].findFirst({
+        where: id ? eq((schema as any)[name].id, id.toString()) : undefined,
+      } as any);
+      return result ? { ...result, _id: (result as any).id } : null;
+    },
+    find: () => ({ sort: () => ({ toArray: async () => [] }) }),
+    insertOne: async (data: any) => {
+      const id = data.id || data._id || Math.random().toString(36).substring(7);
+      const insertData = { ...data, id };
+      delete insertData._id;
+      await db_drizzle.insert((schema as any)[name]).values(insertData);
+      return { insertedId: id };
+    },
+    updateOne: async (query: any, update: any) => {
+      const id = query.id || query._id;
+      if (update.$inc) {
+        const field = Object.keys(update.$inc)[0];
+        const value = update.$inc[field];
+        await db_drizzle.update((schema as any)[name])
+          .set({ [field]: sql`${sql.raw(field)} + ${value}` })
+          .where(eq((schema as any)[name].id, id.toString()));
+      } else {
+        const data = update.$set || update;
+        delete data._id;
+        delete data.id;
+        await db_drizzle.update((schema as any)[name]).set(data).where(eq((schema as any)[name].id, id.toString()));
+      }
+      return { modifiedCount: 1 };
+    },
+    deleteOne: async (query: any) => {
+      const id = query.id || query._id;
+      return await db_drizzle.delete((schema as any)[name]).where(eq((schema as any)[name].id, id.toString()));
+    },
+  });
+
+  if (name === 'products') return mockCollection(schema.products);
+  if (name === 'orderItems') return mockCollection(schema.orderItems);
+  if (name === 'orders') return mockCollection(schema.orders);
+
+  return {
+    findOne: async () => null,
+    find: () => ({ sort: () => ({ toArray: async () => [] }) }),
+    insertOne: async (data: any) => ({ insertedId: 'mock' }),
+    updateOne: async () => ({}),
+    deleteOne: async () => ({}),
   };
 };

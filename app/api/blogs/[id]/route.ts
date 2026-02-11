@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getBlogsCollection } from '@/lib/db'
-import { ObjectId } from 'mongodb'
-
 export async function GET(
     request: Request,
     { params }: { params: { id: string } }
 ) {
     try {
         const collection = await getBlogsCollection()
-        const blog = await collection.findOne({ _id: new ObjectId(params.id) })
+        const blog = await collection.findOne({ _id: params.id })
         if (!blog) return NextResponse.json({ error: 'Blog not found' }, { status: 404 })
         return NextResponse.json(blog)
     } catch (error) {
@@ -35,7 +33,7 @@ export async function PATCH(
         }
 
         await collection.updateOne(
-            { _id: new ObjectId(params.id) },
+            { _id: params.id },
             { $set: updateData }
         )
 
@@ -51,7 +49,7 @@ export async function DELETE(
 ) {
     try {
         const collection = await getBlogsCollection()
-        await collection.deleteOne({ _id: new ObjectId(params.id) })
+        await collection.deleteOne({ _id: params.id })
         return NextResponse.json({ success: true })
     } catch (error) {
         return NextResponse.json({ error: 'Failed to delete blog' }, { status: 500 })

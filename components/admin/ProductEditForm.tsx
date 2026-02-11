@@ -4,10 +4,8 @@ import { useState } from 'react'
 import { Product, ProductImage } from '@/lib/types'
 import { BRANDS } from '@/lib/brands'
 import { ImageReorder } from './products/ImageReorder'
-import { ObjectId } from 'mongodb'
-
 interface ProductWithImages extends Product {
-  _id: ObjectId
+  _id: string
   images: ProductImage[]
 }
 
