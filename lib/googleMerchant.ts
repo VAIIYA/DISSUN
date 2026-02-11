@@ -12,7 +12,7 @@ interface ProductWithImages {
   sku?: string
   published: boolean
   stock: number
-  images: { url: string; alt?: string | null }[]
+  images?: { url: string; alt?: string | null }[]
 }
 
 export function generateGoogleMerchantXML(products: ProductWithImages[]): string {
@@ -24,8 +24,8 @@ export function generateGoogleMerchantXML(products: ProductWithImages[]): string
         'g:title': product.title,
         'g:description': product.description || `${product.title} from ${product.brand}`,
         'g:link': `https://88mph.com/product/${product.slug}`,
-        'g:image_link': product.images[0]?.url || '',
-        'g:additional_image_link': product.images.slice(1).map(img => img.url).join(','),
+        'g:image_link': product.images?.[0]?.url || '',
+        'g:additional_image_link': product.images?.slice(1).map(img => img.url).join(',') || '',
         'g:availability': product.stock > 0 ? 'in stock' : 'out of stock',
         'g:price': `${product.price} USD`,
         'g:brand': product.brand,
@@ -87,8 +87,8 @@ export function generateGoogleMerchantCSV(products: ProductWithImages[]): string
         title: product.title,
         description: product.description || `${product.title} by ${product.brand} - DISSUN`,
         link: `https://dissun.com/product/${product.slug}`,
-        image_link: product.images[0]?.url || '',
-        additional_image_link: product.images.slice(1).map(img => img.url).join(','),
+        image_link: product.images?.[0]?.url || '',
+        additional_image_link: product.images?.slice(1).map(img => img.url).join(',') || '',
         availability: product.stock > 0 ? 'in stock' : 'out of stock',
         price: `${product.price} USD`,
         brand: product.brand,

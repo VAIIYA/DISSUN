@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { getBlogsCollection } from '@/lib/db'
+import { BlogPost } from '@/lib/types'
 
-async function getBlogs() {
+async function getBlogs(): Promise<BlogPost[]> {
     const collection = await getBlogsCollection()
     return collection.find({ status: 'published' }).sort({ publishedAt: -1, createdAt: -1 }).toArray()
 }
@@ -9,7 +10,7 @@ async function getBlogs() {
 export default async function BlogPage() {
     const blogs = await getBlogs()
     const featuredBlog = blogs.find(b => b.isFeatured) || blogs[0]
-    const otherBlogs = blogs.filter(b => b._id.toString() !== featuredBlog?._id.toString())
+    const otherBlogs = blogs.filter(b => b.id !== featuredBlog?.id)
 
     return (
         <div className="bg-metamask-peach min-h-screen">
@@ -63,7 +64,7 @@ export default async function BlogPage() {
                 {/* Blog Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                     {otherBlogs.map((blog) => (
-                        <Link key={blog._id.toString()} href={`/blog/${blog.slug}`} className="group space-y-8 bg-white/30 p-8 rounded-[3.5rem] hover:bg-white/50 transition-all border border-black/5 flex flex-col h-full">
+                        <Link key={blog.id} href={`/blog/${blog.slug}`} className="group space-y-8 bg-white/30 p-8 rounded-[3.5rem] hover:bg-white/50 transition-all border border-black/5 flex flex-col h-full">
                             <div className="aspect-[16/10] rounded-[2.5rem] overflow-hidden shadow-xl">
                                 <img
                                     src={blog.featuredImage || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1000'}

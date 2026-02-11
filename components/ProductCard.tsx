@@ -3,14 +3,11 @@ import Link from 'next/link'
 import { Product } from '@/lib/types'
 
 interface ProductCardProps {
-  product: Product & {
-    images: { url: string; alt?: string | null }[]
-  }
+  product: Product
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const mainImage = product.images[0]?.url || '/placeholder.jpg'
-
+  const mainImage = product.images?.[0]?.url || '/placeholder.jpg'
   const getProductUrl = () => {
     return `/product/${product.id}`
   }

@@ -14,20 +14,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-const product = await db.products.findUnique({
-  where: { _id: productId },
-  include: {
-    images: true
-  }
-})
+    const product = await db.products.findUnique({
+      where: { _id: productId },
+      include: {
+        images: true
+      }
+    })
 
-if (!product) {
-  return NextResponse.json({ error: 'Product not found' }, { status: 404 })
-}
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
 
-if (product.stock < quantity) {
-  return NextResponse.json({ error: 'Insufficient stock' }, { status: 400 })
-}
+    if (product.stock < quantity) {
+      return NextResponse.json({ error: 'Insufficient stock' }, { status: 400 })
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -38,7 +38,7 @@ if (product.stock < quantity) {
             product_data: {
               name: product.title,
               description: product.description || undefined,
-              images: product.images.length > 0 ? [product.images[0].url] : undefined,
+              images: (product.images && product.images.length > 0) ? [product.images[0].url] : undefined,
             },
             unit_amount: Math.round(product.price * 100), // Stripe expects cents
           },

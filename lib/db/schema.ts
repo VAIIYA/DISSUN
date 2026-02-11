@@ -1,5 +1,5 @@
 import { sqliteTable, text, integer, real, primaryKey } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { sql, relations } from 'drizzle-orm';
 
 export const users = sqliteTable('user', {
   id: text('id').primaryKey(),
@@ -98,8 +98,40 @@ export const blogs = sqliteTable('blog', {
   slug: text('slug').notNull().unique(),
   content: text('content').notNull(),
   excerpt: text('excerpt'),
-  image: text('image'),
+  featuredImage: text('image'),
+  isFeatured: integer('isFeatured', { mode: 'boolean' }).notNull().default(false),
   published: integer('published', { mode: 'boolean' }).notNull().default(false),
+  publishedAt: integer('publishedAt', { mode: 'timestamp_ms' }),
   createdAt: integer('createdAt', { mode: 'timestamp_ms' }).notNull().default(sql`(unixepoch() * 1000)`),
   updatedAt: integer('updatedAt', { mode: 'timestamp_ms' }).notNull().default(sql`(unixepoch() * 1000)`),
 });
+
+export const productsRelations = relations(products, ({ many }) => ({
+  images: many(productImages),
+}));
+
+export const productImagesRelations = relations(productImages, ({ one }) => ({
+  product: one(products, {
+    fields: [productImages.productId],
+    references: [products.id],
+  }),
+}));
+
+export const ordersRelations = relations(orders, ({ many, one }) => ({
+  items: many(orderItems),
+  user: one(users, {
+    fields: [orders.userId],
+    references: [users.id],
+  }),
+}));
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+  product: one(products, {
+    fields: [orderItems.productId],
+    references: [products.id],
+  }),
+}));

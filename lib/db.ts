@@ -183,7 +183,7 @@ export const getCollection = async (name: string): Promise<any> => {
   const mockCollection = (tableName: any) => ({
     findOne: async (query: any) => {
       const id = query.id || query._id;
-      const result = await db_drizzle.query[name as keyof typeof db_drizzle.query].findFirst({
+      const result = await (db_drizzle.query[name as keyof typeof db_drizzle.query] as any).findFirst({
         where: id ? eq((schema as any)[name].id, id.toString()) : undefined,
       } as any);
       return result ? { ...result, _id: (result as any).id } : null;

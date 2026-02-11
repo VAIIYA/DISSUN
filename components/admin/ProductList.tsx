@@ -17,7 +17,7 @@ interface ProductWithImages {
   sku?: string
   published: boolean
   createdAt: Date
-  images: { url: string }[]
+  images?: { url: string }[]
 }
 
 interface ProductListProps {
@@ -216,7 +216,7 @@ export function ProductList({ products }: ProductListProps) {
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-12 w-12 relative">
                         <Image
-                          src={product.images[0]?.url || '/placeholder.jpg'}
+                          src={product.images?.[0]?.url || '/placeholder.jpg'}
                           alt={product.title}
                           width={48}
                           height={48}
