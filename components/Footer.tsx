@@ -8,6 +8,7 @@ export function Footer() {
         { href: '/health', label: 'Health' },
         { href: '/coffee', label: 'Coffee' },
         { href: '/supplements', label: 'Supplements' },
+        { href: '/shop', label: 'Shop' },
         { href: '/bundles', label: 'Bundles' },
       ]
     },
